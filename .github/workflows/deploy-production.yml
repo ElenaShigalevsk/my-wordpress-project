@@ -47,12 +47,12 @@ jobs:
       - name: Post-Deployment Monitoring
         run: |
           sleep 30 # Подождать, пока сервисы поднимутся
-          curl -X GET http://your-production-site-url.com/health-check
+          curl -X GET https://cicd-production.dialen.com.ua/health-check
         continue-on-error: true
 
       - name: Check Monitoring Status
         id: check_status
-        run: echo "status=$(curl -s http://your-production-site-url.com/health-check | jq .status)" >> $GITHUB_ENV
+        run: echo "status=$(curl -s https://cicd-production.dialen.com.ua/health-check | jq .status)" >> $GITHUB_ENV
 
       - name: Rollback if Monitoring Fails
         if: ${{ env.status != 'healthy' }}

@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -47,12 +47,12 @@ jobs:
       - name: Post-Deployment Monitoring
         run: |
           sleep 30 # Подождать, пока сервисы поднимутся
-          curl -X GET http://your-staging-site-url.com/health-check
+          curl -X GET https://cicd-stage.dialen.com.ua/health-check
         continue-on-error: true
 
       - name: Check Monitoring Status
         id: check_status
-        run: echo "status=$(curl -s http://your-staging-site-url.com/health-check | jq .status)" >> $GITHUB_ENV
+        run: echo "status=$(curl -s https://cicd-stage.dialen.com.ua/health-check | jq .status)" >> $GITHUB_ENV
 
       - name: Rollback if Monitoring Fails
         if: ${{ env.status != 'healthy' }}
