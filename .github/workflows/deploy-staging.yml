@@ -47,9 +47,9 @@ jobs:
       - name: Install lftp
         run: sudo apt-get install -y lftp
 
-      - name: Test server connectivity
+      - name: Test server connectivity with nc (netcat)
         run: |
-          ping -c 4 ${{ secrets.STAGING_SERVER }}
+          nc -zv ${{ secrets.STAGING_SERVER }} 22
 
       - name: Run Selenium tests
         run: |
