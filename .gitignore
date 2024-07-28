@@ -1,3 +1,8 @@
 node_modules/
 __pycache__/
 *.log
+wp-admin/
+wp-includes/
+wp-content/*
+!wp-content/themes/
+!.gitignore
