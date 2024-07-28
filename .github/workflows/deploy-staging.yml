@@ -44,6 +44,9 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
           chmod 600 private_key
 
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
       - name: Test server connectivity
         run: |
           ping -c 4 ${{ secrets.STAGING_SERVER }}
@@ -52,13 +55,18 @@ jobs:
         run: |
           python test_selenium.py
 
-      - name: Deploy to Staging Server
+      - name: Deploy to Staging Server via SFTP
         if: success()
         env:
-          SERVER: ${{ secrets.STAGING_SERVER }}
           USER: ${{ secrets.STAGING_USER }}
+          SERVER: ${{ secrets.STAGING_SERVER }}
+          REMOTE_DIR: /home/zr241323/dialen.com.ua/cicd-stage
         run: |
-          ssh -i private_key $USER@$SERVER "cd /home/zr241323/dialen.com.ua/cicd-stage && git pull origin staging && npm install && npm run build"
+          lftp -c "
+          set sftp:connect-program 'ssh -a -x -i private_key';
+          open -u $USER sftp://$SERVER;
+          mirror -R . $REMOTE_DIR
+          "
 
       - name: Post-Deployment Monitoring
         run: |
@@ -73,8 +81,12 @@ jobs:
       - name: Rollback if Monitoring Fails
         if: ${{ env.status != 'healthy' }}
         env:
-          SERVER: ${{ secrets.STAGING_SERVER }}
           USER: ${{ secrets.STAGING_USER }}
+          SERVER: ${{ secrets.STAGING_SERVER }}
+          REMOTE_DIR: /home/zr241323/dialen.com.ua/cicd-stage
         run: |
-          ssh -i private_key $USER@$SERVER "cd /home/zr241323/dialen.com.ua/cicd-stage && git reset --hard HEAD~1 && npm install && npm run build"
-
+          lftp -c "
+          set sftp:connect-program 'ssh -a -x -i private_key';
+          open -u $USER sftp://$SERVER;
+          mirror -R --reverse --delete . $REMOTE_DIR
+          "
