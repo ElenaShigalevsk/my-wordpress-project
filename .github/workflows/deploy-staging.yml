@@ -52,7 +52,7 @@ jobs:
       - name: Post-Deployment Monitoring
         run: |
           sleep 30 # Подождать, пока сервисы поднимутся
-          curl -X GET http://your-staging-site-url.com/health-check
+          curl -X GET https://cicd-stage.dialen.com.ua/health-check
         continue-on-error: true
 
       - name: Check Monitoring Status
