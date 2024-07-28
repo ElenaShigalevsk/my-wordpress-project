@@ -54,7 +54,7 @@ jobs:
           SERVER: ${{ secrets.STAGING_SERVER }}
           USER: ${{ secrets.STAGING_USER }}
         run: |
-          ssh -i private_key $USER@$SERVER "cd /path/to/staging && git pull origin staging && npm install && npm run build"
+          ssh -i private_key $USER@$SERVER "cd /home/zr241323/dialen.com.ua/cicd-stage && git pull origin staging && npm install && npm run build"
 
       - name: Post-Deployment Monitoring
         run: |
@@ -72,4 +72,4 @@ jobs:
           SERVER: ${{ secrets.STAGING_SERVER }}
           USER: ${{ secrets.STAGING_USER }}
         run: |
-          ssh -i private_key $USER@$SERVER "cd /path/to/staging && git reset --hard HEAD~1 && npm install && npm run build"
+          ssh -i private_key $USER@$SERVER "cd /home/zr241323/dialen.com.ua/cicd-stage && git reset --hard HEAD~1 && npm install && npm run build"
