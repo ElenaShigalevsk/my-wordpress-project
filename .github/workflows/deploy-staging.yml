@@ -70,10 +70,11 @@ jobs:
           SERVER: ${{ secrets.STAGING_SERVER }}
           REMOTE_DIR: /home/zr241323/dialen.com.ua/cicd-stage
         run: |
-          lftp -c "
-          set sftp:connect-program 'ssh -a -x -i private_key';
-          open -u $USER sftp://$SERVER;
-          mirror -R . $REMOTE_DIR
+          lftp -e "
+            set sftp:connect-program 'ssh -a -x -i private_key';
+            open -u $USER,$USER sftp://$SERVER;
+            mirror -R . $REMOTE_DIR;
+            bye
           "
 
       - name: Post-Deployment Monitoring
@@ -93,8 +94,9 @@ jobs:
           SERVER: ${{ secrets.STAGING_SERVER }}
           REMOTE_DIR: /home/zr241323/dialen.com.ua/cicd-stage
         run: |
-          lftp -c "
-          set sftp:connect-program 'ssh -a -x -i private_key';
-          open -u $USER sftp://$SERVER;
-          mirror -R --reverse --delete . $REMOTE_DIR
+          lftp -e "
+            set sftp:connect-program 'ssh -a -x -i private_key';
+            open -u $USER,$USER sftp://$SERVER;
+            mirror -R --reverse --delete . $REMOTE_DIR;
+            bye
           "
