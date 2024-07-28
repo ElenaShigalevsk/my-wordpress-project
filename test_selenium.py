@@ -10,7 +10,7 @@ class WordPressTest(unittest.TestCase):
     def test_home_page(self):
         driver = self.driver
         driver.get("https://cicd-stage.dialen.com.ua/")
-        self.assertIn("WordPress", driver.title)
+        self.assertIn("Stage", driver.title)
 
     def test_login(self):
         driver = self.driver
@@ -20,7 +20,7 @@ class WordPressTest(unittest.TestCase):
         elem = driver.find_element(By.NAME, "pwd")
         elem.send_keys("z9EkDYv792")  # Замените на ваш пароль
         elem.send_keys(Keys.RETURN)
-        self.assertIn("Dashboard", driver.title)
+        self.assertIn("Консоль", driver.title)
 
     def tearDown(self):
         self.driver.quit()
