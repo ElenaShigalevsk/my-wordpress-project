@@ -39,24 +39,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install selenium
 
+      - name: Create SSH key file
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          chmod 600 private_key
+
       - name: Run Selenium tests
-        env:
-          SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
         run: |
           python test_selenium.py
 
       - name: Deploy to Staging Server
         if: success()
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER: ${{ secrets.STAGING_SERVER }}
           USER: ${{ secrets.STAGING_USER }}
         run: |
-          ssh -i $SSH_PRIVATE_KEY $USER@$SERVER "cd /path/to/staging && git pull origin staging && npm install && npm run build"
+          ssh -i private_key $USER@$SERVER "cd /path/to/staging && git pull origin staging && npm install && npm run build"
 
       - name: Post-Deployment Monitoring
         run: |
-          sleep 30 # Подождать, пока сервисы поднимутся
+          sleep 30  # Подождать, пока сервисы поднимутся
           curl -X GET https://cicd-stage.dialen.com.ua/health-check
         continue-on-error: true
 
@@ -67,8 +69,7 @@ jobs:
       - name: Rollback if Monitoring Fails
         if: ${{ env.status != 'healthy' }}
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER: ${{ secrets.STAGING_SERVER }}
           USER: ${{ secrets.STAGING_USER }}
         run: |
-          ssh -i $SSH_PRIVATE_KEY $USER@$SERVER "cd /path/to/staging && git reset --hard HEAD~1 && npm install && npm run build"
+          ssh -i private_key $USER@$SERVER "cd /path/to/staging && git reset --hard HEAD~1 && npm install && npm run build"
