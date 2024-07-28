@@ -47,10 +47,6 @@ jobs:
       - name: Test server connectivity
         run: |
           ping -c 4 ${{ secrets.STAGING_SERVER }}
-          
-      - name: Test server connectivity with nc (netcat)
-          run: |
-            nc -zv ${{ secrets.STAGING_SERVER }} 22
 
       - name: Run Selenium tests
         run: |
